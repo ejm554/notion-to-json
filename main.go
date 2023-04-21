@@ -55,6 +55,14 @@ func main() {
 	// Retrieve the selected database.
 	selectedDatabase := databases[selection-1]
 	plainTextTitle := extractPlainTextTitle(selectedDatabase.Title)
+	databaseID := notionapi.DatabaseID(selectedDatabase.ID)
+	response, err := client.Database.Query(context.Background(), databaseID, &notionapi.DatabaseQueryRequest{
+		Filter:   nil,
+		PageSize: 100,
+	})
+	if err != nil {
+		log.Fatalf("Error retrieving database: %v", err)
+	}
 
 	// Ensure the "exported" directory exists.
 	err = os.MkdirAll("exported", 0755)
@@ -83,12 +91,14 @@ func main() {
 	}
 	defer file.Close()
 
-	// Write the database information to the JSON file.
+	// Write the results to the JSON file.
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
-	err = encoder.Encode(selectedDatabase)
-	if err != nil {
-		log.Fatalf("Error writing JSON data: %v", err)
+	for _, page := range response.Results {
+		err := encoder.Encode(page.Properties)
+		if err != nil {
+			log.Fatalf("Error writing JSON data: %v", err)
+		}
 	}
 
 	fmt.Printf("Saved database '%s' to file: %s\n", plainTextTitle, fileName)

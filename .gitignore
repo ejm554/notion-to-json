@@ -18,3 +18,5 @@ test
 *.log
 notion-to-json
 notion-to-json.exe
+main
+main.exe

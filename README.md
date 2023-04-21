@@ -29,13 +29,13 @@ go build main.go
 
 4. Run the script:
 
-On Unix-based systems (Linux and macOS):
 ```
+# On Unix-based systems (Linux and macOS):
 ./main
 ```
 
-On Windows:
 ```
+# On Windows:
 main.exe
 ```
 
